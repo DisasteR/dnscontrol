@@ -1,0 +1,73 @@
+#!/bin/bash
+
+##########################################################################
+## Purpose
+## This File is part of dnscontrol.
+## dnscontrol is a script collection to manage a Bind DNS server farm.
+## Using one master and 1 or more slaves
+
+##########################################################################
+## Copyright (C) 2015 DisasteR
+## https://github.com/DisasteR/dnscontrol
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##########################################################################
+
+function need_root {
+	ROOT=`id -u`
+	if [[ $ROOT -ne 0 ]]
+	then
+		echo "
+	You Must run it as ROOT or SUDO.
+	"
+		exit 1
+	fi
+}
+
+function usage {
+	NAME=`basename $0`
+	case $NAME in
+		*zone)
+			echo "Usage: ./${NAME} zonename
+"
+		;;
+		reloaddns)
+			echo "Usage: ./${NAME}
+"
+		;;
+		dnssync)
+			echo "Usage /${NAME}
+"
+		;;
+	esac
+}
+
+function validate_domain {
+        echo $1 | ${GREP} -P '(?=^.{5,254}$)(^(?:(?!\d+\.)[a-zA-Z0-9_\-]{1,63}\.?)+\.(?:[a-z]{2,})$)' > /dev/null 2>&1 &&
+        return 0
+
+        return 1
+}
+
+function update_serial {
+	DATENOW=$(date +%Y%m%d)
+	SERIAL=`${EGREP} -i '[0-9]{10}\s+;\sserial' $1 | ${SED} 's/[\ |\t]//g' | ${AWK} -F';' '{print $1}'`
+	SERIALDATE=$(echo $SERIAL | cut -b1-8)
+	SERIALID=$(echo $SERIAL | cut -b9-10)
+	if [ $SERIALDATE -lt $DATENOW ]; then
+		${SED} -i -e 's/'$SERIALDATE''$SERIALID'/'$DATENOW'01/g' $1
+	else
+		${SED} -i -e 's/'$SERIAL'/'`((SERIAL++)) ; echo $SERIAL`'/g' $1
+	fi
+}

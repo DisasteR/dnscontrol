@@ -1,0 +1,9 @@
+------------- DNSCONTROL
+
+  sudo addzone		- Add Zone to Bind
+  sudo deletezone 	- Delete Zone from Bind
+  sudo editzone   	- Edit a existing Zone
+  sudo reloaddns  	- Reload All DNS Servers
+  sudo reloadzone 	- Reload a Zone on All DNS Servers
+  sudo dnssync		- Resend Slaves Configurations on All Slaves Servers
+
