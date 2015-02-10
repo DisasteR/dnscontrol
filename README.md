@@ -105,6 +105,37 @@ controls {
 };
 ```
 
+***named.conf.logging :***
+```
+logging {
+
+    channel bind-log {
+    file "/var/log/named.log" versions 3 size 5m;
+        print-category yes;
+        print-severity yes;
+        print-time yes;
+        severity info;
+    };
+    category default { bind-log; };
+    category update { bind-log; };
+    category update-security { bind-log; };
+    category security { bind-log; };
+    category queries { bind-log; };
+    category lame-servers { null; };
+
+        channel xfer-log {
+                file "/var/log/named-xfer.log";
+                print-category yes;
+                print-severity yes;
+                print-time yes;
+                severity info;
+        };
+        category xfer-in { xfer-log; };
+        category xfer-out { xfer-log; };
+        category notify { xfer-log; };
+};
+```
+
 #### Slaves
 
 ***named.conf :***
@@ -179,5 +210,36 @@ server __MASTER_IP__ {
 ```
 controls {
     inet * allow { 127.0.0.1; __MASTER_IP__; } keys { "rndc-key"; };
+};
+```
+
+***named.conf.logging (Same as master):***
+```
+logging {
+
+    channel bind-log {
+    file "/var/log/named.log" versions 3 size 5m;
+        print-category yes;
+        print-severity yes;
+        print-time yes;
+        severity info;
+    };
+    category default { bind-log; };
+    category update { bind-log; };
+    category update-security { bind-log; };
+    category security { bind-log; };
+    category queries { bind-log; };
+    category lame-servers { null; };
+
+        channel xfer-log {
+                file "/var/log/named-xfer.log";
+                print-category yes;
+                print-severity yes;
+                print-time yes;
+                severity info;
+        };
+        category xfer-in { xfer-log; };
+        category xfer-out { xfer-log; };
+        category notify { xfer-log; };
 };
 ```
