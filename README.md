@@ -81,7 +81,7 @@ options {
     listen-on-v6 { any; };
 
     notify yes;
-    also-notify { 192.95.25.138; };
+    also-notify { __SLAVES_IP__; };
 
     allow-transfer { 127.0.0.1; __MASTER_IP__; __SLAVES_IP__; };
 
